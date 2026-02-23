@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Yandex Games SDK -->
+    <script src="sdk.js"></script>
+    <script>
+        // Инициализация SDK с правильной обработкой
+        (function() {
+            window.YaGames.init()
+                .then(ysdk => {
+                    console.log('Yandex SDK initialized successfully');
+                    window.ysdk = ysdk;
+                    
+                    // Отправляем событие gameReady после загрузки игры
+                    if (ysdk.features && ysdk.features.GameplayAPI) {
+                        ysdk.features.GameplayAPI.gameReady();
+                    }
+                    
+                    // Определяем язык и передаём в игру
+                    const lang = ysdk.environment.i18n.lang;
+                    console.log('Current language:', lang);
+                    
+                    // Создаём событие для передачи языка в игру
+                    window.dispatchEvent(new CustomEvent('yandexLanguage', { 
+                        detail: { language: lang }
+                    }));
+                    
+                    // Загружаем сохранённый прогресс
+                    ysdk.getPlayerData()
+                        .then(data => {
+                            console.log('Loaded player data:', data);
+                            if (data && Object.keys(data).length > 0) {
+                                window.dispatchEvent(new CustomEvent('yandexLoadData', { 
+                                    detail: { data: data }
+                                }));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading player data:', error);
+                        });
+                })
+                .catch(error => {
+                    console.error('Yandex SDK initialization failed:', error);
+                });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>iPhone Clicker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="store-container">
+        <div class="store-header">
+            <h1>IPHONE CLICKER</h1> <!-- Изменено название для единообразия -->
+        </div>
+
+        <div class="row-x2-balance">
+            <button class="x2-button" id="buyX2">x2</button>
+            <div class="balance-box">
+                <span class="balance-label">Б</span>
+                <span class="balance-value" id="balanceDisplay">0</span>
+            </div>
+        </div>
+
+        <div class="auto-row">
+            <div class="auto-label">⏱ Б. Сек. <span id="autoIncomeDisplay">0</span></div>
+            <div class="auto-value" id="autoRateDisplay">0/сек</div>
+        </div>
+
+        <div class="iphone-click-area" id="clickerMain">
+            <div class="iphone-model-name" id="currentModelName">iPhone 6</div>
+            <img class="iphone-image" id="currentModelImage" src="images/iphone6.jpg" alt="iPhone" draggable="false">
+        </div>
+
+        <div class="shop-grid" id="shopGrid"></div>
+
+        <div class="level-panel">
+            <div class="level-text" id="levelDisplay">Уровень 1</div>
+            <div class="next-model" id="nextModelDisplay">→ iPhone 6s</div>
+        </div>
+
+        <div class="footer-note">
+            кликай по айфону — копи на новый уровень
+        </div>
+    </div>
+
+    <!-- Уведомление о завершении (появляется при достижении iPhone 17 Pro) -->
+    <div id="completionNotification" class="notification hidden">
+        <div class="notification-content">
+            <span class="close-btn" id="closeNotification">&times;</span>
+            <h2>🎉 Ранний доступ</h2>
+            <p>Вы достигли последней модели — <strong>iPhone 17 Pro</strong>!</p>
+            <p>Это предварительная версия игры. Если у вас есть идеи для новых айфонов или улучшений, свяжитесь с разработчиком:</p>
+            <div class="contacts">
+                <a href="#" target="_blank" id="discordLink">Discord (В разработке)</a>
+                <a href="https://t.me/ClickerRazhab" target="_blank" id="telegramLink">Telegram</a> <!-- Исправлена ссылка -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
